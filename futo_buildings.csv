@@ -4,8 +4,8 @@ Library,5.392750,6.986500,curated
 Senate Building,5.392300,6.986200,curated
 Hostel A,5.392100,6.987000,curated
 Hostel B,5.391800,6.985900,curated
-Hostel C,5.392600,6.986800,curated
-Hostel D,5.392480,6.986700,curated
+Hostel C,5.392600,6.986800,curated,MTN
+Hostel D,5.392480,6.986700,curated,Airtel
 Workshop,5.392200,6.986900,curated
 SEET Complex,5.393000,6.986600,curated
 SOSC Extension,5.392400,6.985600,curated
@@ -15,7 +15,7 @@ Administration,5.392550,6.986000,curated
 Health Centre,5.393100,6.985800,curated
 FUTO Guest House,5.393300,6.986900,curated
 Lecture Hall 2,5.393500,6.987200,curated
-Hostel B,5.392950,6.987000,curated
+Hostel B,5.392950,6.987000,curated,Glo
 Botanical Garden,5.393200,6.986400,curated
 Research Lab 1,5.392000,6.986800,curated
 Research Lab 2,5.392150,6.985900,curated
@@ -28,3 +28,32 @@ UCC,5.392950,6.985500,curated
 SUG Resource center,5.392200,6.985500,curated
 Microfinance Bank,5.392450,6.987100,curated
 Medicals,5.392800,6.985900,curated
+name,lat,lon,source,operator
+Main Gate,5.392900,6.986100,curated,9mobile
+University Library,5.392750,6.986500,curated,Airtel
+Senate Building,5.392300,6.986200,curated,MTN
+Hostel A,5.392100,6.987000,curated,Glo
+Hostel B,5.391800,6.985900,curated,MTN
+Hostel C,5.392600,6.986800,curated,9mobile
+Hostel D,5.392480,6.986700,curated,Airtel
+Workshop,5.392200,6.986900,curated,MTN
+SEET Complex,5.393000,6.986600,curated,Airtel
+SOSC Extension,5.392400,6.985600,curated,MTN
+BJ Services,5.391900,6.986300,curated,Airtel
+Elvis bukateria,5.392850,6.986200,curated,MTN
+Administration,5.392550,6.986000,curated,Airtel
+Health Centre,5.393100,6.985800,curated,MTN
+FUTO Guest House,5.393300,6.986900,curated,MTN
+Lecture Hall 2,5.393500,6.987200,curated,Glo
+Botanical Garden,5.393200,6.986400,curated,9mobile
+Research Lab 1,5.392000,6.986800,curated,9mobile
+Research Lab 2,5.392150,6.985900,curated,9mobile
+ICT Centre,5.392700,6.986900,curated,MTN
+Conference Centre,5.391700,6.986700,curated,Airtel
+Postgraduate Centre,5.393400,6.986100,curated,Airtel
+Student Affairs,5.391600,6.985800,curated,MTN
+SOPs theatre,5.391900,6.987300,curated,Glo
+UCC,5.392950,6.985500,curated,9mobile
+SUG Resource center,5.392200,6.985500,curated,9mobile
+Microfinance Bank,5.392450,6.987100,curated,9mobile
+Medicals,5.392800,6.985900,curated,Airtel

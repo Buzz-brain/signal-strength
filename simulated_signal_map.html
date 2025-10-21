@@ -137,36 +137,99 @@
 
             // Load campus points from CSV (futo_buildings.csv) and add to layers
             var opColor = { 'MTN':'green', 'Airtel':'blue', 'Glo':'orange', '9mobile':'purple' };
+            // case-insensitive operator map
+            var opColorLower = {};
+            Object.keys(opColor).forEach(function(k){ opColorLower[k.toLowerCase()] = opColor[k]; });
             var campusPoints = [];
             var markerByName = {};
 
-            function addPointRow(name, lat, lon, source){
+            function addPointRow(name, lat, lon, source, operator){
+                var op = (operator || '').trim();
+                var opLower = op.toLowerCase();
                 var color = 'purple';
+                if (op && opColorLower[opLower]) color = opColorLower[opLower];
                 var score = 60;
                 var latf = parseFloat(lat), lonf = parseFloat(lon);
                 var marker = L.circleMarker([latf, lonf], {color:color, fillColor:color, fillOpacity:0.9, radius:10, weight:3});
-                var popup = '<b>' + name + '</b><br>Source: ' + source + '<br>Lat: ' + latf.toFixed(6) + '<br>Lon: ' + lonf.toFixed(6);
+                var popup = '<b>' + name + '</b><br>Source: ' + source + (op?('<br>Operator: '+op):'') + '<br>Lat: ' + latf.toFixed(6) + '<br>Lon: ' + lonf.toFixed(6);
                 marker.bindPopup(popup);
                 marker.bindTooltip(name, {direction:'top', offset:[0,-8]});
                 markerCluster.addLayer(marker);
                 pointsLayer.addLayer(marker);
                 heatData.push([latf, lonf, 0.6]);
                 markerByName[name] = marker;
-                campusPoints.push({name:name, lat:latf, lon:lonf, source:source, score:score});
+                campusPoints.push({name:name, lat:latf, lon:lonf, source:source, score:score, operator:op});
             }
 
             fetch('futo_buildings.csv').then(function(r){ return r.text(); }).then(function(text){
-                var lines = text.trim().split('\n');
-                for(var i=1;i<lines.length;i++){
-                    var cols = lines[i].split(',');
-                    if (cols.length >= 3){
-                        var name = cols[0]; var lat = cols[1]; var lon = cols[2]; var src = cols[3] || 'csv';
-                        addPointRow(name, lat, lon, src);
-                    }
+                var lines = text.split(/\r?\n/).map(function(l){ return l.trim(); }).filter(Boolean);
+                // Find the last header line that starts with 'name,' - this handles CSVs with prepended sections
+                var lastHeader = -1;
+                for (var i=0;i<lines.length;i++){
+                    if (lines[i].toLowerCase().startsWith('name,')) lastHeader = i;
                 }
+                if (lastHeader < 0){
+                    console.warn('No CSV header found in futo_buildings.csv');
+                    return;
+                }
+                var headerCols = lines[lastHeader].split(',').map(function(h){ return h.trim().toLowerCase(); });
+                var rows = lines.slice(lastHeader+1);
+                rows.forEach(function(line){
+                    var cols = line.split(',');
+                    if (cols.length < 3) return;
+                    // map by header name where possible
+                    var row = {};
+                    for (var j=0;j<Math.min(cols.length, headerCols.length); j++){
+                        row[headerCols[j]] = cols[j].trim();
+                    }
+                    var name = row['name'] || cols[0];
+                    var lat = row['lat'] || cols[1];
+                    var lon = row['lon'] || cols[2];
+                    var src = row['source'] || row['src'] || 'csv';
+                    var operator = row['operator'] || '';
+                    addPointRow(name, lat, lon, src, operator);
+                });
                 markerCluster.addTo(map_8f696fa6242461788599f1ca62e520e8);
                 heatLayer.setLatLngs(heatData);
+                recolorExistingMarkers();
             }).catch(function(e){ console.warn('Failed to load CSV', e); });
+
+            // Recolor any existing CircleMarker layers in pointsLayer based on campusPoints operator mapping
+            function recolorExistingMarkers(){
+                pointsLayer.eachLayer(function(layer){
+                    try{
+                        if (!(layer instanceof L.CircleMarker)) return;
+                        var popup = layer.getPopup && layer.getPopup();
+                        var name = null;
+                        if (popup && popup.getContent){
+                            var html = popup.getContent();
+                            if (typeof html === 'string'){
+                                var m = html.match(/<b>([^<]+)<\/b>/);
+                                if (m) name = m[1].trim();
+                            }
+                        }
+                        if (name && markerByName[name]){
+                            // already colored when added
+                            return;
+                        }
+                        if (name){
+                            // try to find campusPoints entry
+                            for(var i=0;i<campusPoints.length;i++){
+                                if (campusPoints[i].name && campusPoints[i].name.toLowerCase() === name.toLowerCase()){
+                                    var op = (campusPoints[i].operator||'').toLowerCase();
+                                    var color = opColorLower[op] || 'purple';
+                                    layer.setStyle({color:color, fillColor:color, fillOpacity:0.9});
+                                    // update tooltip/popup to include operator if missing
+                                    var newPopup = '<b>'+campusPoints[i].name+'</b><br>Source: '+campusPoints[i].source+'<br>Operator: '+(campusPoints[i].operator||'')+'<br>Lat: '+campusPoints[i].lat.toFixed(6)+'<br>Lon: '+campusPoints[i].lon.toFixed(6);
+                                    layer.bindPopup(newPopup);
+                                    layer.bindTooltip(campusPoints[i].name, {direction:'top', offset:[0,-8]});
+                                    break;
+                                }
+                            }
+                        }
+                    }catch(e){ /* ignore */ }
+                });
+            }
 
             // Add map center marker (FUTO)
             var futoIcon = L.icon({ iconUrl: 'https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/images/marker-icon.png', iconSize: [25,41], iconAnchor:[12,41] });
@@ -189,6 +252,7 @@
                                 marker.bindPopup(newPopup);
                                 heatData[idx] = [newLat, newLon, Math.max(0.1, pt.score/100)];
                                 heatLayer.setLatLngs(heatData);
+                                recolorExistingMarkers();
                             }
                         }
                     }).catch(function(){/* ignore */});
