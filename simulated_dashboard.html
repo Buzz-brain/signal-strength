@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>FUTO Network Signal Comparison Dashboard</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<style>
+			body { background:#f6f8fa; color:#222 }
+			.card { border-radius: .6rem }
+			.dashboard-header { font-weight:600 }
+			.map-card iframe { min-height:500px; border-radius:.5rem }
+			.img-preview { max-height:360px; object-fit:contain }
+		</style>
+	</head>
+	<body>
+		<div class="container mt-4">
+			<h1 class="text-center mb-4 dashboard-header">FUTO Network Signal Comparison Dashboard</h1>
+
+			<div class="row g-3">
+				<div class="col-12 col-md-6">
+					<div class="card shadow-sm p-3">
+						<h5 class="card-title">Average Combined Score by Operator</h5>
+						<img src="avg_combined_score_by_operator.png" class="img-fluid img-preview" alt="Average combined score by operator">
+						<p class="text-muted small mt-2">Source: simulated_signal_data.csv</p>
+					</div>
+				</div>
+
+				<div class="col-12 col-md-6">
+					<div class="card shadow-sm p-3">
+						<h5 class="card-title">Library Signal Comparison</h5>
+						<img src="combined_score_library.png" class="img-fluid img-preview" alt="Library comparison">
+						<p class="text-muted small mt-2">Click any marker on the map to inspect measurements at a location.</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mt-4">
+				<div class="col-12">
+					<div class="card p-3 shadow-sm map-card">
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<h5 class="card-title mb-0">Interactive Coverage Map</h5>
+							<a class="btn btn-sm btn-outline-primary" href="futo_buildings.csv" download>Download CSV</a>
+						</div>
+						<iframe src="simulated_signal_map.html" width="100%" height="760" style="border:none;" title="Signal map"></iframe>
+						<p class="text-muted small mt-2">Tip: Use the layer control on the map to switch basemaps or toggle signal points.</p>
+					</div>
+				</div>
+			</div>
+
+			<footer class="mt-4 text-center text-muted small">
+				Generated: simulated dataset (30 locations) — For demonstration and report visuals only.
+			</footer>
+		</div>
+	</body>
+</html>
